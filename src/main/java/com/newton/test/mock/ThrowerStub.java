@@ -1,19 +1,39 @@
 package com.newton.test.mock;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.mockito.stubbing.OngoingStubbing;
 
-public final class ThrowerStub<M, E extends Throwable> extends SingleActionStub<M, E> {
+import com.newton.test.utils.ArrayBasedList;
 
-	private final Class<E> exceptionType;
+public class ThrowerStub<M, E extends Throwable> extends AbstractFunctionHandlingStub<M, Object> {
 	
-	ThrowerStub(Mocker<M> mocker, Class<E> exceptionType) {
-		super(mocker);
-		this.exceptionType = exceptionType;
+	private final ArrayBasedList<Class<E>> throwables;
+
+	protected ThrowerStub(MockConfiguration<M> configuration, List<Class<E>> initialThrowables) {
+		super(configuration);
+		this.throwables = new ArrayBasedList<>(initialThrowables);
 	}
 	
+	protected ThrowerStub(MockConfiguration<M> configuration, Class<E> initialThrowable) {
+		this(configuration, Arrays.asList(initialThrowable));
+	}
+	
+	public ThrowerStub<M, E> then(Class<E> nextThrowable) {
+		throwables.add(nextThrowable);
+		return this;
+	}
+
 	@Override
-	@SuppressWarnings("unchecked")
-	protected void handleWhenCalling(OngoingStubbing<E> stubbing) {
-		stubbing.thenThrow(exceptionType);
+	protected void completeStubbing(OngoingStubbing<Object> stub) {
+		
+		if (throwables.hasOneElement()) {
+			stub.thenReturn(throwables.getFirst());
+		}
+		else {
+			stub.thenReturn(throwables.asArray());
+		}
 	}
+
 }

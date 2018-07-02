@@ -1,18 +1,38 @@
 package com.newton.test.mock;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.mockito.stubbing.OngoingStubbing;
 
-public final class ReturnValueStub<M, R> extends SingleActionStub<M, R> {
+import com.newton.test.utils.ArrayBasedList;
+
+public final class ReturnValueStub<M, R> extends AbstractFunctionHandlingStub<M, R> {
 	
-	private final R value;
+	private final ArrayBasedList<R> returnValues;
+
+	protected ReturnValueStub(MockConfiguration<M> configuration, R initialReturnValue) {
+		this(configuration, Arrays.asList(initialReturnValue));
+	}
 	
-	ReturnValueStub(Mocker<M> mocker, R value) {
-		super(mocker);
-		this.value = value;
+	protected ReturnValueStub(MockConfiguration<M> configuration, List<R> initialReturnValues) {
+		super(configuration);
+		this.returnValues = new ArrayBasedList<>(initialReturnValues);
+	}
+	
+	public ReturnValueStub<M, R> then(R nextReturnValue) {
+		returnValues.add(nextReturnValue);
+		return this;
 	}
 
 	@Override
-	protected void handleWhenCalling(OngoingStubbing<R> stubbing) {
-		stubbing.thenReturn(value);
+	protected void completeStubbing(OngoingStubbing<R> stub) {
+		
+		if (returnValues.hasOneElement()) {
+			stub.thenReturn(returnValues.getFirst());
+		}
+		else {
+			stub.thenReturn(returnValues.getFirst(), returnValues.getAfterFirstAsArray());
+		}
 	}
 }

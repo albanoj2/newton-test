@@ -3,7 +3,7 @@ package com.newton.test.bdd;
 import static com.newton.test.bdd.Clauses.given;
 
 import com.newton.test.mock.MockCreator;
-import com.newton.test.mock.Mocker;
+import com.newton.test.mock.MockConfiguration;
 
 public class Bdd {
 	
@@ -15,13 +15,15 @@ public class Bdd {
 				.then("bar")
 				.whenCalling(mock -> mock.doSomething())
 			.toReturn("foo").whenCalling(mock -> mock.doSomething())
+			.toThrow(Exception.class)
+				.then(Exception.class)
+				.whenCalling(mock -> mock.doSomething())
 			.toExecuteRealMethod().whenCalling(mock -> mock.doSomething())
+			.toRespondWith(invokation -> "foo").whenCalling(mock -> mock.doSomething())
 			.toRespondToArgumentsWith(arguments -> "foo").whenCalling(mock -> mock.doSomething())
-			.done();
+			.andGetMock();
 		
-		Mocker.configure(bdd)
-			.toExecuteRealMethod().whenCalling(mock -> mock.doSomething())
-			.done();
+		MockConfiguration.configure(bdd).toExecuteRealMethod().whenCalling(mock -> mock.doSomething());
 	}
 
 	public void simpleChain() {

@@ -19,7 +19,7 @@ public class MockCreator<M> {
 		return new MockCreator<T>(mock);
 	}
 	
-	public Mocker<M> andConfigureIt() {
-		return new Mocker<>(mock);
+	public MockConfiguration<M> andConfigureIt() {
+		return new MockConfiguration<>(mock);
 	}
 }

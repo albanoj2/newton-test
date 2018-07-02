@@ -2,15 +2,15 @@ package com.newton.test.mock;
 
 import org.mockito.stubbing.OngoingStubbing;
 
-public class RealMethodCallerStub<M, R> extends SingleActionStub<M, R> {
+public class RealMethodCallerStub<M, R> extends AbstractFunctionHandlingStub<M, R> {
 
-	protected RealMethodCallerStub(Mocker<M> mocker) {
+	protected RealMethodCallerStub(MockConfiguration<M> mocker) {
 		super(mocker);
 	}
-
+	
 	@Override
-	protected void handleWhenCalling(OngoingStubbing<R> stubbing) {
-		stubbing.thenCallRealMethod();
+	protected void completeStubbing(OngoingStubbing<R> stub) {
+		stub.thenCallRealMethod();
 	}
 
 }
